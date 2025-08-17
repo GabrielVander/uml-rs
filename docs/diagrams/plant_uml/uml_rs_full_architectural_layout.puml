@@ -1,0 +1,77 @@
+@startuml
+circle "File System" as file_system
+circle Terminal as terminal
+
+component uml {
+    package entities as uml_entities {
+        rectangle UmlDiagram as uml_diagram
+    }
+
+    package application as uml_application{
+        rectangle "Load Diagram Use Case" as load_diagram_use_case
+        rectangle "Load Diagram Input Data" as load_diagram_input_data <<data-structure>>
+        rectangle "Load Diagram Output Data" as load_diagram_output_data <<data-structure>>
+        rectangle "Load Diagram Input Port" as load_diagram_input_port <<interface>>
+        rectangle "Load Diagram Output Port" as load_diagram_output_port <<interface>>
+        rectangle "UmlRepository" as uml_repository <<interface>>
+
+        load_diagram_use_case ..|> load_diagram_input_port : <<implements>>
+        load_diagram_use_case --> load_diagram_output_port : <<uses>>
+        load_diagram_use_case --> load_diagram_input_data : <<uses>>
+        load_diagram_use_case --> load_diagram_output_data : <<uses>>
+        load_diagram_use_case --> uml_repository : <<uses>>
+        load_diagram_use_case --> uml_diagram : <<uses>>
+
+        uml_repository --> uml_diagram : <<uses>>
+    }
+}
+
+component plant_uml {
+    package adapters as plant_uml_adapters {
+        rectangle PlantUmlLocalFileRepository as plant_uml_local_file_repository
+        rectangle PlantUmlInMemoryInputRepository as plant_uml_in_memory_input_repository
+        rectangle PlantUmlParser as plant_uml_parser <<interface>>
+        rectangle PlantUmlDiagram as plant_uml_diagram <<data-structure>>
+
+        plant_uml_local_file_repository ..|> uml_repository : <<implements>>
+        plant_uml_local_file_repository --> uml_diagram : <<uses>>
+        plant_uml_in_memory_input_repository ..|> uml_repository : <<implements>>
+        plant_uml_in_memory_input_repository --> uml_diagram : <<uses>>
+
+        plant_uml_local_file_repository --> plant_uml_parser : <<uses>>
+        plant_uml_local_file_repository --> file_system : <<uses>>
+        plant_uml_in_memory_input_repository --> plant_uml_parser : <<uses>>
+    }
+
+    package infrastructure as plant_uml_infrastructure {
+        rectangle PlantUmlPestParser as plant_uml_pest_parser
+        rectangle PlantUmlPestModel as plant_uml_pest_model <<data-structure>>
+
+        plant_uml_pest_parser ..|> plant_uml_parser : <<implements>>
+        plant_uml_pest_parser --> plant_uml_diagram : <<uses>>
+        plant_uml_pest_parser --> plant_uml_pest_model : <<uses>>
+    }
+}
+
+component cli {
+    package adapters as cli_adapters {
+        rectangle CliPresenter as cli_presenter
+        rectangle CliController as cli_controller
+        rectangle CliViewModel as cli_view_model <<data-structure>>
+
+        plant_uml_local_file_repository ..|> uml_repository : <<implements>>
+        cli_controller --> load_diagram_input_port : <<uses>>
+        cli_presenter ..|> load_diagram_output_port : <<implements>>
+        cli_presenter --> cli_view_model : <<uses>>
+    }
+
+    package infrastructure as cli_infrastracture {
+        rectangle ClapCliApplication as clap_cli_application
+
+        clap_cli_application --> cli_presenter : <<uses>>
+        clap_cli_application --> cli_controller : <<uses>>
+        clap_cli_application --> cli_view_model : <<uses>>
+        clap_cli_application --> terminal : <<uses>>
+    }
+}
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+rectangle "Frameworks & Drivers" as frameworks_and_drivers
+rectangle "Interface Adapters" as interface_adapters
+rectangle Application as application
+rectangle Entities as entities
+
+application --> entities
+interface_adapters --> application
+frameworks_and_drivers --> interface_adapters
+@enduml

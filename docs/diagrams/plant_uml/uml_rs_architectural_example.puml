@@ -1,0 +1,54 @@
+@startuml
+package entities {
+    rectangle Entities as entities_classes
+}
+
+package application {
+    rectangle "Use Case Interactor" as use_case_interactor
+    rectangle "Input Data" as input_data <<data-structure>>
+    rectangle "Output Data" as output_data <<data-structure>>
+    rectangle "Input Boundary" as input_boundary <<interface>>
+    rectangle "Output Boundary" as output_boundary <<interface>>
+    rectangle "Data Access" as data_access <<interface>>
+
+    use_case_interactor ..|> input_boundary : <<implements>>
+    use_case_interactor --> output_boundary : <<uses>>
+    use_case_interactor --> input_data : <<uses>>
+    use_case_interactor --> output_data : <<uses>>
+    use_case_interactor --> data_access : <<uses>>
+    use_case_interactor --> entities_classes : <<uses>>
+
+    data_access --> entities_classes : <<uses>>
+}
+
+package adapters {
+    rectangle "Data Access Implementation" as data_access_impl
+    rectangle Presenter as presenter
+    rectangle Controller as controller
+    rectangle "View Model" as view_model <<data-structure>>
+
+    data_access_impl ..|> data_access : <<implements>>
+    controller --> input_boundary : <<uses>>
+    presenter ..|> output_boundary : <<implements>>
+    presenter --> view_model : <<uses>>
+}
+
+package frameworks_and_drivers {
+    rectangle CLI as cli
+    rectangle "TUI Application" as tui_application
+    rectangle "Web Application" as web_application
+    rectangle "File System" as file_system
+    rectangle Database as database_
+
+    presenter --> cli : <<uses>>
+    presenter --> tui_application : <<uses>>
+    presenter --> web_application : <<uses>>
+
+    cli --> controller : <<uses>>
+    tui_application --> controller : <<uses>>
+    web_application --> controller : <<uses>>
+
+    data_access_impl --> file_system : <<uses>>
+    data_access_impl --> database_ : <<uses>>
+}
+@enduml

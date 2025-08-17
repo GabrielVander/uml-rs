@@ -1,0 +1,17 @@
+@startuml
+component uml <<lib>>
+component ascii_renderer <<lib>>
+component plant_uml <<lib>>
+component cli <<lib>>
+component nvim_plugin <<lua>>
+component plant_uml_ascii_renderer_cli <<bin>>
+
+ascii_renderer --> uml
+plant_uml --> uml
+
+plant_uml_ascii_renderer_cli --> plant_uml
+plant_uml_ascii_renderer_cli --> ascii_renderer
+plant_uml_ascii_renderer_cli --> cli
+
+nvim_plugin ..> plant_uml_ascii_renderer_cli : <<runtime dependency>>
+@enduml
