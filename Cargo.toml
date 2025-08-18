@@ -1,9 +1,9 @@
 [workspace]
 resolver = "3"
 members = [
-  "ascii_renderer",
-  "cli",
-  "plant_uml",
-  "plant_uml_ascii_renderer_cli",
-  "uml",
+  "src/ascii_renderer",
+  "src/cli",
+  "src/plant_uml",
+  "src/plant_uml_ascii_renderer_cli",
+  "src/uml",
 ]
