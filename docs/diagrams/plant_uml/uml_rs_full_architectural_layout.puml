@@ -34,9 +34,7 @@ component plant_uml {
         rectangle PlantUmlDiagram as plant_uml_diagram <<data-structure>>
 
         plant_uml_local_file_repository ..|> uml_repository : <<implements>>
-        plant_uml_local_file_repository --> uml_diagram : <<uses>>
         plant_uml_in_memory_input_repository ..|> uml_repository : <<implements>>
-        plant_uml_in_memory_input_repository --> uml_diagram : <<uses>>
 
         plant_uml_local_file_repository --> plant_uml_parser : <<uses>>
         plant_uml_local_file_repository --> file_system : <<uses>>
