@@ -39,7 +39,7 @@ I devide the code into 4 main layers:
 
 ![uml-rs architectural layers](docs/diagrams/rendered/uml_rs_architectural_layers.png "uml-rs Architectural Layers")
 
-```
+```plantuml
 @startuml
 rectangle "Frameworks & Drivers" as frameworks_and_drivers
 rectangle "Interface Adapters" as interface_adapters
@@ -56,7 +56,7 @@ As an example usage we could have:
 
 ![uml-rs architectural example](docs/diagrams/rendered/uml_rs_architectural_example.png "uml-rs Architectural Example")
 
-```
+```plantuml
 @startuml
 package entities {
     rectangle Entities as entities_classes
@@ -119,7 +119,7 @@ Currently I aim to have the following components:
 
 ![uml-rs components](docs/diagrams/rendered/uml_rs_components.png "uml-rs Components")
 
-```
+```plantuml
 @startuml
 component uml <<lib>>
 component ascii_renderer <<lib>>
@@ -146,7 +146,7 @@ The full intented architecture is as follows:
 
 ![uml-rs full architectural layout](docs/diagrams/rendered/uml_rs_full_architectural_layout.png "uml-rs Full Architectural Layout")
 
-```
+```plantuml
 @startuml
 circle "File System" as file_system
 circle Terminal as terminal
