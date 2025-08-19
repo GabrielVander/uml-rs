@@ -1,0 +1,6 @@
+@startuml
+component plant_uml
+component uml
+
+plant_uml --> uml : <<uses>>
+@enduml

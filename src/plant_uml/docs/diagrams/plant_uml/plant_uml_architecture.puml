@@ -1,0 +1,31 @@
+@startuml
+circle "File System" as file_system
+
+component uml {
+    package application as uml_application{
+        rectangle "UmlRepository" as uml_repository <<interface>>
+    }
+}
+
+component plant_uml {
+    package adapters as plant_uml_adapters {
+        rectangle PlantUmlLocalFileRepository as plant_uml_local_file_repository
+        rectangle PlantUmlInMemoryInputRepository as plant_uml_in_memory_input_repository
+
+        plant_uml_local_file_repository ..|> uml_repository : <<implements>>
+        plant_uml_in_memory_input_repository ..|> uml_repository : <<implements>>
+    }
+
+    package infrastructure as plant_uml_infrastructure {
+        rectangle PlantUmlPestParser as plant_uml_pest_parser
+        rectangle PlantUmlParser as plant_uml_parser <<interface>>
+        rectangle PlantUmlLocalFile as plant_uml_local_file
+        
+        plant_uml_local_file_repository --> plant_uml_parser : <<uses>>
+        plant_uml_local_file_repository --> plant_uml_local_file : <<uses>>
+        plant_uml_in_memory_input_repository --> plant_uml_parser : <<uses>>
+        plant_uml_pest_parser ..|> plant_uml_parser : <<implements>>
+        plant_uml_local_file --> file_system : <<uses>>
+    }
+}
+@enduml
