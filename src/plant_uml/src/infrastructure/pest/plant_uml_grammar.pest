@@ -1,0 +1,23 @@
+// Pest grammar is whitespace-sensitive inside rules.
+// WHITESPACE handles spaces, tabs, and newlines between our main rules.
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+
+// An identifier is the name of an element, like "MyComponent"
+identifier = @{ (ASCII_ALPHANUMERIC | "_")+ }
+
+// A component declaration, e.g., "component MyComponent"
+component_declaration = { "component" ~ identifier }
+
+// A statement can be any of the things we want to parse.
+// We'll add more here later, like actors or arrows.
+statement = _{ component_declaration }
+
+// The start and end tags for the diagram
+start_tag = _{ "@startuml" }
+end_tag   = _{ "@enduml" }
+
+// The top-level rule for our parser.
+// A diagram starts with a start_tag, has zero or more statements,
+// and ends with an end_tag.
+// SOI = Start of Input, EOI = End of Input
+diagram = _{ SOI ~ start_tag ~ statement* ~ end_tag ~ EOI }
