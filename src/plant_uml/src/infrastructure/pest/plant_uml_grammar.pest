@@ -6,7 +6,8 @@ WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
 identifier = @{ (ASCII_ALPHANUMERIC | "_")+ }
 
 // A component declaration, e.g., "component MyComponent"
-component_declaration = { "component" ~ identifier }
+component_declaration = { "component" ~ identifier ~ alias? }
+alias = { "as" ~ identifier }
 
 // A statement can be any of the things we want to parse.
 // We'll add more here later, like actors or arrows.

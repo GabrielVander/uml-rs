@@ -16,33 +16,51 @@ impl PestPlantUmlParser {
     pub fn new() -> Self {
         Self {}
     }
-}
 
-impl PlantUmlParser for PestPlantUmlParser {
-    fn parse(&self, input: &str) -> Result<PlantUmlDiagram, PlantUmlParserError> {
-        let mut elements: Vec<PlantUmlElement> = vec![];
+    fn parse_with_pest_parser<'a>(
+        &self,
+        input: &'a str,
+    ) -> Result<pest::iterators::Pairs<'a, Rule>, PlantUmlParserError> {
+        PestParser::parse(Rule::diagram, input)
+            .inspect(|p| println!("{:?}", p))
+            .inspect_err(|e| println!("{:?}", e))
+            .map_err(|_| PlantUmlParserError::UnknownError)
+    }
 
-        for pair in PestParser::parse(Rule::diagram, input)
-            .map_err(|_| PlantUmlParserError::UnknownError)?
-        {
-            match pair.as_rule() {
-                Rule::component_declaration => {
-                    for component_pair in pair.into_inner() {
-                        match component_pair.as_rule() {
-                            Rule::identifier => {
-                                elements.push(PlantUmlElement::Component(
-                                    component_pair.as_str().to_string(),
-                                ));
-                            }
-                            _ => {}
-                        }
-                    }
+    fn create_component_from_pair(&self, pair: pest::iterators::Pair<Rule>) -> PlantUmlElement {
+        let mut name: String = "".to_string();
+        let mut alias: Option<String> = None;
+
+        for component_pair in pair.into_inner() {
+            match component_pair.as_rule() {
+                Rule::identifier => {
+                    name = component_pair.as_str().to_string();
+                }
+                Rule::alias => {
+                    alias = Some(component_pair.into_inner().as_str().to_string());
                 }
                 _ => {}
             }
         }
 
-        Ok(PlantUmlDiagram::new(elements))
+        PlantUmlElement::Component(name, alias)
+    }
+}
+
+impl PlantUmlParser for PestPlantUmlParser {
+    fn parse(&self, input: &str) -> Result<PlantUmlDiagram, PlantUmlParserError> {
+        let mut diagram: PlantUmlDiagram = PlantUmlDiagram::new(vec![]);
+
+        for pair in self.parse_with_pest_parser(input)? {
+            match pair.as_rule() {
+                Rule::component_declaration => {
+                    diagram.elements.push(self.create_component_from_pair(pair));
+                }
+                _ => {}
+            }
+        }
+
+        Ok(diagram)
     }
 }
 
@@ -74,7 +92,20 @@ mod tests {
         empty_input: ("", Err(PlantUmlParserError::UnknownError)),
         empty_diagram: ("@startuml@enduml", Ok(PlantUmlDiagram::new(vec![]))),
         empty_diagram_with_line_breaks: ("@startuml\n\n\n\n\n@enduml", Ok(PlantUmlDiagram::new(vec![]))),
-        one_component: ("@startuml\ncomponent MyComponent\n@enduml", Ok(PlantUmlDiagram::new(vec![PlantUmlElement::Component("MyComponent".to_string())]))),
-        multiple_components: ("@startuml\ncomponent MyComponent\ncomponent MyOtherComponent\n\n\n\n\ncomponent YetAnotherComponent\n@enduml", Ok(PlantUmlDiagram::new(vec![PlantUmlElement::Component("MyComponent".to_string()), PlantUmlElement::Component("MyOtherComponent".to_string()), PlantUmlElement::Component("YetAnotherComponent".to_string())]))),
+        one_component: ("@startuml\ncomponent MyComponent\n@enduml", Ok(PlantUmlDiagram::new(vec![PlantUmlElement::Component("MyComponent".to_string(), None)]))),
+        multiple_components: (
+            "@startuml\ncomponent MyComponent\ncomponent MyOtherComponent\n\n\n\n\ncomponent YetAnotherComponent\n@enduml",
+            Ok(PlantUmlDiagram::new(vec![
+                PlantUmlElement::Component("MyComponent".to_string(), None),
+                PlantUmlElement::Component("MyOtherComponent".to_string(), None),
+                PlantUmlElement::Component("YetAnotherComponent".to_string(), None)
+            ]))
+        ),
+        component_with_alias: (
+            "@startuml\ncomponent MyComponent as some_alias\n@enduml",
+            Ok(PlantUmlDiagram::new(vec![
+                PlantUmlElement::Component("MyComponent".to_string(), Some("some_alias".to_string()))
+            ]))
+        ),
     }
 }

@@ -4,14 +4,13 @@ pub struct PlantUmlDiagram {
 }
 
 impl PlantUmlDiagram {
-    pub fn new(components: Vec<PlantUmlElement>) -> Self {
-        Self {
-            elements: components,
-        }
+    pub fn new(elements: Vec<PlantUmlElement>) -> Self {
+        Self { elements }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PlantUmlElement {
-    Component(String),
+    // Name, Alias
+    Component(String, Option<String>),
 }
