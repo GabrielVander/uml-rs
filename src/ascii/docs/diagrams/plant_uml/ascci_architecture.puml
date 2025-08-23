@@ -1,0 +1,17 @@
+@startuml
+component ascii {
+    package adapters {
+        rectangle AsciiPresenter
+        rectangle AsciiViewModel <<data-structure>>
+
+        AsciiPresenter --> AsciiViewModel : <<uses>>
+    }
+
+    package infrastructure as cli_infrastracture {
+        rectangle AsciiRenderer <<interface>>
+        
+        AsciiRenderer --> AsciiPresenter : <<uses>>
+        AsciiRenderer --> AsciiViewModel : <<uses>>
+    }
+}
+@enduml
