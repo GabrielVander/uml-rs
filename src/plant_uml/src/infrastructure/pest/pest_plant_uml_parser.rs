@@ -66,9 +66,10 @@ impl PlantUmlParser for PestPlantUmlParser {
 
 #[cfg(test)]
 mod tests {
-    use crate::infrastructure::plant_uml_parser::PlantUmlParser;
+    use pretty_assertions::assert_eq;
 
     use super::*;
+
     macro_rules! parse_tests {
         ($($name:ident: $value:expr,)*) => {
         $(

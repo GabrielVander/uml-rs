@@ -7,3 +7,6 @@ members = [
   "src/plant_uml_ascii_renderer_cli",
   "src/uml",
 ]
+
+[workspace.dependencies]
+pretty_assertions = "1.4.1"
