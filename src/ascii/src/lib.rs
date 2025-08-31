@@ -42,9 +42,43 @@ mod test {
             result.to_string(),
             ascii_grid_model! {
                 vec![
-                    vec!['╭', '─', '─', '╮'],
-                    vec!['│', ' ', ' ', '│'],
-                    vec!['╰', '─', '─', '╯'],
+                    vec!['╭', '─', '─', '─', '─', '╮'],
+                    vec!['│', ' ', ' ', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ', ' ', ' ', '│'],
+                    vec!['╰', '─', '─', '─', '─', '╯'],
+                ]
+            }
+            .to_string()
+        )
+    }
+
+    #[test]
+    fn one_component_with_name() {
+        let mut presenter: AsciiPresenter = AsciiPresenter::new();
+        let diagram: Diagram = Diagram::new(
+            None,
+            vec![Node::new(
+                "my_node".to_string(),
+                NodeType::Component("SomeComponent".to_string()),
+            )],
+            vec![],
+        );
+
+        let result: AsciiGridViewModel = presenter.process_diagram(&diagram);
+
+        assert_eq!(
+            result.to_string(),
+            ascii_grid_model! {
+                vec![
+                    vec!['╭', '─', '─','─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '╮'],
+                    vec!['│', ' ', ' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ','S', 'o', 'm', 'e', 'C', 'o', 'm', 'p', 'o', 'n', 'e', 'n', 't', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '│'],
+                    vec!['│', ' ', ' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '│'],
+                    vec!['╰', '─', '─','─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '─', '╯'],
                 ]
             }
             .to_string()

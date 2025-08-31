@@ -2,7 +2,7 @@ use crate::adapters::models::{
     ascii_element::AsciiElement, ascii_grid::AsciiGrid, position::Position,
 };
 
-struct AsciiBorderDecorator {
+pub(crate) struct AsciiBorderDecorator {
     wrapped: Box<dyn AsciiElement>,
     fill_char: char,
     horizontal_padding: u16,
