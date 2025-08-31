@@ -1,24 +1,26 @@
+use std::fmt::Display;
+
 use crate::adapters::models::position::Position;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct AsciiGrid {
+pub(crate) struct AsciiGrid {
     fill_char: char,
     grid: Vec<Vec<char>>,
 }
 
 impl AsciiGrid {
-    pub fn new(fill_char: char, grid: Vec<Vec<char>>) -> Self {
+    pub(crate) fn new(fill_char: char, grid: Vec<Vec<char>>) -> Self {
         Self { fill_char, grid }
     }
 
-    pub fn empty(fill_char: char) -> Self {
+    pub(crate) fn empty(fill_char: char) -> Self {
         Self {
             fill_char,
             grid: vec![],
         }
     }
 
-    pub fn put_char(&mut self, ch: char, pos: &Position) {
+    pub(crate) fn put_char(&mut self, ch: char, pos: &Position) {
         let x = pos.x as usize;
         let y = pos.y as usize;
 
@@ -32,7 +34,20 @@ impl AsciiGrid {
         self.grid[y][x] = ch;
     }
 
-    pub fn get_grid(&self) -> Vec<Vec<char>> {
+    pub(crate) fn get_grid(&self) -> Vec<Vec<char>> {
         self.grid.clone()
+    }
+}
+
+impl Display for AsciiGrid {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for row in &self.grid {
+            for &ch in row {
+                write!(f, "{}", ch)?;
+            }
+            writeln!(f)?;
+        }
+
+        Ok(())
     }
 }

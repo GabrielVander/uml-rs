@@ -3,7 +3,7 @@ use uml::domain::entities::diagram::{Diagram, Node};
 use crate::adapters::{
     models::{
         ascii_composite::AsciiComposite, ascii_element::AsciiElement, ascii_grid::AsciiGrid,
-        ascii_text::AsciiText,
+        ascii_text::AsciiText, position::Position,
     },
     view_models::ascii_grid_view_model::AsciiGridViewModel,
 };
@@ -40,6 +40,9 @@ impl From<&Diagram> for Box<dyn AsciiElement> {
 
 impl From<&Node> for Box<dyn AsciiElement> {
     fn from(value: &Node) -> Self {
-        Box::new(AsciiText::new(format!("{:?}", value.r#type)))
+        Box::new(AsciiText::new(
+            Position::default(),
+            format!("{:?}", value.r#type),
+        ))
     }
 }
