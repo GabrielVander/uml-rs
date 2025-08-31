@@ -1,3 +1,4 @@
+pub(crate) mod ascii_border_decorator;
 pub mod ascii_composite;
 pub mod ascii_element;
 pub mod ascii_grid;
