@@ -1,11 +1,11 @@
 [workspace]
 resolver = "3"
 members = [
-  "src/ascii",
-  "src/cli",
-  "src/plant_uml",
-  "src/plant_uml_ascii_renderer_cli",
-  "src/uml",
+  "crates/libraries/ascii",
+  "crates/libraries/cli",
+  "crates/libraries/plant_uml",
+  "crates/applications/plant_uml_ascii_renderer_cli",
+  "crates/libraries/uml",
 ]
 
 [workspace.dependencies]
