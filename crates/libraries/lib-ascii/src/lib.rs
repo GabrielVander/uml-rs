@@ -11,8 +11,8 @@ mod test {
         ascii_grid_model,
     };
 
+    use lib_core::domain::entities::diagram::{Diagram, Node, NodeType};
     use pretty_assertions::assert_eq;
-    use uml::domain::entities::diagram::{Diagram, Node, NodeType};
 
     #[test]
     fn empty_diagram() {
