@@ -4,9 +4,7 @@ members = [
   "crates/libraries/lib-core",
   "crates/libraries/lib-plant-uml",
   "crates/libraries/lib-ascii",
-  "crates/libraries/lib-cli",
   # Aplications
-  "crates/applications/plant_uml_ascii_renderer_cli",
 ]
 resolver = "3"
 

@@ -71,10 +71,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lib-cli"
-version = "0.1.0"
-
-[[package]]
 name = "lib-core"
 version = "0.1.0"
 
@@ -142,10 +138,6 @@ dependencies = [
  "pest",
  "sha2",
 ]
-
-[[package]]
-name = "plant_uml_ascii_renderer_cli"
-version = "0.1.0"
 
 [[package]]
 name = "pretty_assertions"
