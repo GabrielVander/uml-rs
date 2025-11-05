@@ -1,4 +1,4 @@
-use uml::domain::entities::diagram::{Diagram, Node, NodeType};
+use lib_core::domain::entities::diagram::{Diagram, Node, NodeType};
 
 use crate::adapters::{
     models::{

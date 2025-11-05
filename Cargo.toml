@@ -1,12 +1,14 @@
 [workspace]
-resolver = "3"
 members = [
-  "crates/libraries/ascii",
-  "crates/libraries/cli",
-  "crates/libraries/plant_uml",
+  # Libraries
+  "crates/libraries/lib-core",
+  "crates/libraries/lib-plant-uml",
+  "crates/libraries/lib-ascii",
+  "crates/libraries/lib-cli",
+  # Aplications
   "crates/applications/plant_uml_ascii_renderer_cli",
-  "crates/libraries/uml",
 ]
+resolver = "3"
 
 [workspace.dependencies]
 pretty_assertions = "1.4.1"

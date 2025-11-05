@@ -1,10 +1,10 @@
 [package]
-name = "ascii"
+name = "lib-ascii"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-uml = { path = "../uml" }
+lib-core = { path = "../lib-core" }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
