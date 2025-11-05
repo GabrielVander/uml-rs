@@ -1,7 +1,7 @@
 use pest::Parser;
 use pest_derive::Parser;
 
-use crate::infrastructure::models::plant_uml_diagram::{PlantUmlDiagram, PlantUmlElement};
+use crate::infra::models::plant_uml_diagram::{PlantUmlDiagram, PlantUmlElement};
 
 pub struct PestPlantUmlParser;
 
@@ -58,7 +58,7 @@ pub enum PlantUmlParserError {
 }
 
 #[derive(Parser)]
-#[grammar = "src/infrastructure/pest/plant_uml_grammar.pest"]
+#[grammar = "src/infra/pest/plant_uml_grammar.pest"]
 struct PestParser;
 
 #[cfg(test)]
