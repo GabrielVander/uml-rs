@@ -1,20 +1,25 @@
 use pest::Parser;
 use pest_derive::Parser;
 
-use crate::infrastructure::{
-    models::plant_uml_diagram::{PlantUmlDiagram, PlantUmlElement},
-    plant_uml_parser::{PlantUmlParser, PlantUmlParserError},
-};
+use crate::infrastructure::models::plant_uml_diagram::{PlantUmlDiagram, PlantUmlElement};
 
-#[derive(Parser)]
-#[grammar = "src/infrastructure/pest/plant_uml_grammar.pest"]
-struct PestParser {}
-
-pub struct PestPlantUmlParser {}
+pub struct PestPlantUmlParser;
 
 impl PestPlantUmlParser {
     pub fn new() -> Self {
         Self {}
+    }
+
+    fn parse(&self, input: &str) -> Result<PlantUmlDiagram, PlantUmlParserError> {
+        let mut diagram: PlantUmlDiagram = PlantUmlDiagram::new(vec![]);
+
+        for pair in self.parse_with_pest_parser(input)? {
+            if pair.as_rule() == Rule::component_declaration {
+                diagram.elements.push(self.create_component_from_pair(pair));
+            }
+        }
+
+        Ok(diagram)
     }
 
     fn parse_with_pest_parser<'a>(
@@ -47,22 +52,14 @@ impl PestPlantUmlParser {
     }
 }
 
-impl PlantUmlParser for PestPlantUmlParser {
-    fn parse(&self, input: &str) -> Result<PlantUmlDiagram, PlantUmlParserError> {
-        let mut diagram: PlantUmlDiagram = PlantUmlDiagram::new(vec![]);
-
-        for pair in self.parse_with_pest_parser(input)? {
-            match pair.as_rule() {
-                Rule::component_declaration => {
-                    diagram.elements.push(self.create_component_from_pair(pair));
-                }
-                _ => {}
-            }
-        }
-
-        Ok(diagram)
-    }
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PlantUmlParserError {
+    UnknownError,
 }
+
+#[derive(Parser)]
+#[grammar = "src/infrastructure/pest/plant_uml_grammar.pest"]
+struct PestParser;
 
 #[cfg(test)]
 mod tests {
@@ -80,7 +77,7 @@ mod tests {
                 let input: &str = first_param;
                 let expected: Result<PlantUmlDiagram, PlantUmlParserError> = second_param;
 
-                let parser: Box<dyn PlantUmlParser> = Box::new(PestPlantUmlParser::new());
+                let parser: PestPlantUmlParser = PestPlantUmlParser::new();
                 let result: Result<PlantUmlDiagram, PlantUmlParserError> = parser.parse(input);
 
                 assert_eq!(result, expected);
