@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Diagram {
     pub title: Option<String>,
     pub nodes: Vec<Node>,
@@ -15,7 +15,7 @@ impl Diagram {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Node {
     pub id: String,
     pub r#type: NodeType,
@@ -27,7 +27,7 @@ impl Node {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Edge {
     pub from_id: String,
     pub to_id: String,
@@ -36,13 +36,13 @@ pub struct Edge {
     pub label: Option<String>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum NodeType {
     // Name
     Component(String),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum EdgeStyle {
     Solid,     // ---
     Arrow,     // -->
