@@ -78,6 +78,7 @@ version = "0.1.0"
 name = "lib-plant-uml"
 version = "0.1.0"
 dependencies = [
+ "lib-core",
  "pest",
  "pest_derive",
  "pretty_assertions",

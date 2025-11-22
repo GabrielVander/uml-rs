@@ -1,25 +1,18 @@
 use pest::Parser;
 use pest_derive::Parser;
 
-use crate::infra::models::plant_uml_diagram::{PlantUmlDiagram, PlantUmlElement};
+use crate::{
+    adapters::repositories::diagram_repository_plant_uml_impl::{
+        PlantUmlParser, PlantUmlParserError,
+    },
+    infra::models::plant_uml_diagram::{PlantUmlDiagram, PlantUmlElement},
+};
 
 pub struct PestPlantUmlParser;
 
 impl PestPlantUmlParser {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {}
-    }
-
-    fn parse(&self, input: &str) -> Result<PlantUmlDiagram, PlantUmlParserError> {
-        let mut diagram: PlantUmlDiagram = PlantUmlDiagram::new(vec![]);
-
-        for pair in self.parse_with_pest_parser(input)? {
-            if pair.as_rule() == Rule::component_declaration {
-                diagram.elements.push(self.create_component_from_pair(pair));
-            }
-        }
-
-        Ok(diagram)
     }
 
     fn parse_with_pest_parser<'a>(
@@ -29,7 +22,7 @@ impl PestPlantUmlParser {
         PestParser::parse(Rule::diagram, input)
             .inspect(|p| println!("{:?}", p))
             .inspect_err(|e| println!("{:?}", e))
-            .map_err(|_| PlantUmlParserError::UnknownError)
+            .map_err(|e| PlantUmlParserError::UnknownError(format!("{:?}", e)))
     }
 
     fn create_component_from_pair(&self, pair: pest::iterators::Pair<Rule>) -> PlantUmlElement {
@@ -52,9 +45,18 @@ impl PestPlantUmlParser {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum PlantUmlParserError {
-    UnknownError,
+impl PlantUmlParser for PestPlantUmlParser {
+    fn parse(&self, input: &str) -> Result<PlantUmlDiagram, PlantUmlParserError> {
+        let mut diagram: PlantUmlDiagram = PlantUmlDiagram::new(vec![]);
+
+        for pair in self.parse_with_pest_parser(input)? {
+            if pair.as_rule() == Rule::component_declaration {
+                diagram.elements.push(self.create_component_from_pair(pair));
+            }
+        }
+
+        Ok(diagram)
+    }
 }
 
 #[derive(Parser)]
@@ -87,7 +89,7 @@ mod tests {
     }
 
     parse_tests! {
-        empty_input: ("", Err(PlantUmlParserError::UnknownError)),
+        empty_input: ("", Err(PlantUmlParserError::UnknownError("Error { variant: ParsingError { positives: [], negatives: [] }, location: Pos(0), line_col: Pos((1, 1)), path: None, line: \"\", continued_line: None, parse_attempts: None }".to_owned()))),
         empty_diagram: ("@startuml@enduml", Ok(PlantUmlDiagram::new(vec![]))),
         empty_diagram_with_line_breaks: ("@startuml\n\n\n\n\n@enduml", Ok(PlantUmlDiagram::new(vec![]))),
         one_component: ("@startuml\ncomponent MyComponent\n@enduml", Ok(PlantUmlDiagram::new(vec![PlantUmlElement::Component("MyComponent".to_string(), None)]))),
