@@ -53,6 +53,9 @@ impl From<FileRepositoryError> for LoadDiagramFromFileError {
     fn from(value: FileRepositoryError) -> Self {
         match value {
             FileRepositoryError::Unknown(msg) => LoadDiagramFromFileError::FileLoadError(msg),
+            FileRepositoryError::InexistentFile => {
+                LoadDiagramFromFileError::FileLoadError("Given file does not exist".to_owned())
+            }
         }
     }
 }
@@ -78,27 +81,44 @@ mod test {
         },
         use_cases::load_diagram_from_file::{LoadDiagramFromFileError, LoadDiagramFromFileUseCase},
     };
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn should_fail_if_unable_to_load_file() {
-        let file_path: &'static str = "non_existent_file.puml";
-        let error_msg: String = "Some unknown error".to_owned();
-        let file_repository_result: Result<String, FileRepositoryError> =
-            Err(FileRepositoryError::Unknown(error_msg.clone()));
-        let diagram_repository_result: Option<Result<Diagram, DiagramRepositoryError>> = None;
-        let expected: Result<Diagram, LoadDiagramFromFileError> =
-            Err(LoadDiagramFromFileError::FileLoadError(error_msg.clone()));
+        let test_cases = vec![
+            (
+                FileRepositoryError::Unknown("Some unknown error".to_owned()),
+                Err(LoadDiagramFromFileError::FileLoadError(
+                    "Some unknown error".to_owned(),
+                )),
+            ),
+            (
+                FileRepositoryError::InexistentFile,
+                Err(LoadDiagramFromFileError::FileLoadError(
+                    "Given file does not exist".to_owned(),
+                )),
+            ),
+        ];
 
-        let file_repository: Arc<dyn FileRepository> =
-            Arc::new(MockFileRepository::new(file_repository_result));
-        let diagram_repository: Arc<dyn DiagramRepository> =
-            Arc::new(MockDiagramRepository::new(diagram_repository_result));
-        let use_case: LoadDiagramFromFileUseCase =
-            LoadDiagramFromFileUseCase::new(file_repository.clone(), diagram_repository.clone());
+        for (file_repository_error, expected) in test_cases {
+            let file_path: &'static str = "some_file.puml";
+            let file_repository_result: Result<String, FileRepositoryError> =
+                Err(file_repository_error.clone());
+            let diagram_repository_result: Option<Result<Diagram, DiagramRepositoryError>> = None;
 
-        let result: Result<Diagram, LoadDiagramFromFileError> = use_case.execute(file_path);
+            let file_repository: Arc<dyn FileRepository> =
+                Arc::new(FileRepositoryMockImpl::new(file_repository_result));
+            let diagram_repository: Arc<dyn DiagramRepository> =
+                Arc::new(DiagramRepositoryMockImpl::new(diagram_repository_result));
+            let use_case: LoadDiagramFromFileUseCase = LoadDiagramFromFileUseCase::new(
+                file_repository.clone(),
+                diagram_repository.clone(),
+            );
 
-        assert_eq!(expected, result);
+            let result: Result<Diagram, LoadDiagramFromFileError> = use_case.execute(file_path);
+
+            assert_eq!(expected, result);
+        }
     }
 
     #[test]
@@ -106,14 +126,14 @@ mod test {
         let file_path: &'static str = "invalid_content_file.puml";
         let error_msg: String = "Some unknown error".to_owned();
         let file_repository: Arc<dyn FileRepository> =
-            Arc::new(MockFileRepository::new(Ok("Some content".to_owned())));
+            Arc::new(FileRepositoryMockImpl::new(Ok("Some content".to_owned())));
         let diagram_repository_result: Option<Result<Diagram, DiagramRepositoryError>> =
             Some(Err(DiagramRepositoryError::Unknown(error_msg.clone())));
         let expected: Result<_, LoadDiagramFromFileError> =
             Err(LoadDiagramFromFileError::ParseError(error_msg));
 
         let diagram_repository: Arc<dyn DiagramRepository> =
-            Arc::new(MockDiagramRepository::new(diagram_repository_result));
+            Arc::new(DiagramRepositoryMockImpl::new(diagram_repository_result));
         let use_case: LoadDiagramFromFileUseCase =
             LoadDiagramFromFileUseCase::new(file_repository.clone(), diagram_repository.clone());
 
@@ -132,9 +152,9 @@ mod test {
         let expected: Result<Diagram, LoadDiagramFromFileError> = Ok(diagram.clone());
 
         let file_repository: Arc<dyn FileRepository> =
-            Arc::new(MockFileRepository::new(file_repository_result));
+            Arc::new(FileRepositoryMockImpl::new(file_repository_result));
         let diagram_repository: Arc<dyn DiagramRepository> =
-            Arc::new(MockDiagramRepository::new(diagram_repository_result));
+            Arc::new(DiagramRepositoryMockImpl::new(diagram_repository_result));
         let use_case: LoadDiagramFromFileUseCase =
             LoadDiagramFromFileUseCase::new(file_repository.clone(), diagram_repository.clone());
 
@@ -143,17 +163,17 @@ mod test {
         assert_eq!(expected, result);
     }
 
-    struct MockFileRepository {
+    struct FileRepositoryMockImpl {
         result: Result<String, FileRepositoryError>,
     }
 
-    impl MockFileRepository {
+    impl FileRepositoryMockImpl {
         fn new(result: Result<String, FileRepositoryError>) -> Self {
             Self { result }
         }
     }
 
-    impl FileRepository for MockFileRepository {
+    impl FileRepository for FileRepositoryMockImpl {
         fn get_file_content(
             &self,
             _file_path: &std::path::Path,
@@ -163,17 +183,17 @@ mod test {
     }
 
     #[derive(Default)]
-    struct MockDiagramRepository {
+    struct DiagramRepositoryMockImpl {
         result: Option<Result<Diagram, DiagramRepositoryError>>,
     }
 
-    impl MockDiagramRepository {
+    impl DiagramRepositoryMockImpl {
         fn new(result: Option<Result<Diagram, DiagramRepositoryError>>) -> Self {
             Self { result }
         }
     }
 
-    impl DiagramRepository for MockDiagramRepository {
+    impl DiagramRepository for DiagramRepositoryMockImpl {
         fn parse_from_content(&self, _content: &str) -> Result<Diagram, DiagramRepositoryError> {
             if let Some(value) = self.result.as_ref() {
                 return value.clone();

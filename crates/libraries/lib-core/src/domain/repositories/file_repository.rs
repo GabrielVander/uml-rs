@@ -1,10 +1,11 @@
 use std::path::Path;
 
-pub(crate) trait FileRepository {
+pub trait FileRepository {
     fn get_file_content(&self, file_path: &Path) -> Result<String, FileRepositoryError>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum FileRepositoryError {
+pub enum FileRepositoryError {
     Unknown(String),
+    InexistentFile,
 }
