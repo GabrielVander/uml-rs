@@ -8,17 +8,17 @@ use crate::domain::{
     },
 };
 
-struct LoadDiagramFromFileUseCase<T> {
+struct LoadDiagramUseCase<T> {
     file_repository: Arc<dyn FileRepository>,
     diagram_repository: Arc<dyn DiagramRepository>,
-    presenter: Arc<dyn LoadDiagramFromFilePresenter<T>>,
+    presenter: Arc<dyn LoadDiagramPresenter<T>>,
 }
 
-impl<T> LoadDiagramFromFileUseCase<T> {
+impl<T> LoadDiagramUseCase<T> {
     fn new(
         file_repository: Arc<dyn FileRepository>,
         diagram_repository: Arc<dyn DiagramRepository>,
-        presenter: Arc<dyn LoadDiagramFromFilePresenter<T>>,
+        presenter: Arc<dyn LoadDiagramPresenter<T>>,
     ) -> Self {
         Self {
             file_repository,
@@ -27,54 +27,54 @@ impl<T> LoadDiagramFromFileUseCase<T> {
         }
     }
 
-    pub fn execute(&self, path: &str) -> T {
-        let result: LoadDiagramFromFileResult = Ok(Path::new(path))
-            .and_then(|p: &Path| self.load_file(p))
+    pub fn execute(&self, source: &str) -> T {
+        let result: LoadDiagramResult = self
+            .load_from_local_fs_file(source)
             .and_then(|content: String| self.parse_content(content));
 
         self.presenter.present(result)
     }
 
-    fn load_file(&self, path: &Path) -> Result<String, LoadDiagramFromFileError> {
-        self.file_repository
-            .get_file_content(path)
-            .map_err(LoadDiagramFromFileError::from)
+    fn load_from_local_fs_file(&self, source: &str) -> Result<String, LoadDiagramError> {
+        Ok(Path::new(source))
+            .and_then(|p: &Path| self.file_repository.get_file_content(p))
+            .map_err(LoadDiagramError::from)
     }
 
-    fn parse_content(&self, content: String) -> Result<Diagram, LoadDiagramFromFileError> {
+    fn parse_content(&self, content: String) -> Result<Diagram, LoadDiagramError> {
         self.diagram_repository
             .parse_from_content(&content)
-            .map_err(LoadDiagramFromFileError::from)
+            .map_err(LoadDiagramError::from)
     }
 }
 
-trait LoadDiagramFromFilePresenter<T> {
-    fn present(&self, result: LoadDiagramFromFileResult) -> T;
+trait LoadDiagramPresenter<T> {
+    fn present(&self, result: LoadDiagramResult) -> T;
 }
 
-type LoadDiagramFromFileResult = Result<Diagram, LoadDiagramFromFileError>;
+type LoadDiagramResult = Result<Diagram, LoadDiagramError>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-enum LoadDiagramFromFileError {
+enum LoadDiagramError {
     FileLoadError(String),
     ParseError(String),
 }
 
-impl From<FileRepositoryError> for LoadDiagramFromFileError {
+impl From<FileRepositoryError> for LoadDiagramError {
     fn from(value: FileRepositoryError) -> Self {
         match value {
-            FileRepositoryError::Unknown(msg) => LoadDiagramFromFileError::FileLoadError(msg),
+            FileRepositoryError::Unknown(msg) => LoadDiagramError::FileLoadError(msg),
             FileRepositoryError::InexistentFile => {
-                LoadDiagramFromFileError::FileLoadError("Given file does not exist".to_owned())
+                LoadDiagramError::FileLoadError("Given file does not exist".to_owned())
             }
         }
     }
 }
 
-impl From<DiagramRepositoryError> for LoadDiagramFromFileError {
+impl From<DiagramRepositoryError> for LoadDiagramError {
     fn from(value: DiagramRepositoryError) -> Self {
         match value {
-            DiagramRepositoryError::Unknown(msg) => LoadDiagramFromFileError::ParseError(msg),
+            DiagramRepositoryError::Unknown(msg) => LoadDiagramError::ParseError(msg),
         }
     }
 }
@@ -90,9 +90,8 @@ mod test {
             diagram_repository::{DiagramRepository, DiagramRepositoryError},
             file_repository::{FileRepository, FileRepositoryError},
         },
-        use_cases::load_diagram_from_file::{
-            LoadDiagramFromFileError, LoadDiagramFromFilePresenter, LoadDiagramFromFileResult,
-            LoadDiagramFromFileUseCase,
+        use_cases::load_diagram::{
+            LoadDiagramError, LoadDiagramPresenter, LoadDiagramResult, LoadDiagramUseCase,
         },
     };
     use pretty_assertions::assert_eq;
@@ -102,13 +101,13 @@ mod test {
         let test_cases = vec![
             (
                 FileRepositoryError::Unknown("Some unknown error".to_owned()),
-                Err(LoadDiagramFromFileError::FileLoadError(
+                Err(LoadDiagramError::FileLoadError(
                     "Some unknown error".to_owned(),
                 )),
             ),
             (
                 FileRepositoryError::InexistentFile,
-                Err(LoadDiagramFromFileError::FileLoadError(
+                Err(LoadDiagramError::FileLoadError(
                     "Given file does not exist".to_owned(),
                 )),
             ),
@@ -124,17 +123,16 @@ mod test {
                 Arc::new(FileRepositoryMockImpl::new(file_repository_result));
             let diagram_repository: Arc<dyn DiagramRepository> =
                 Arc::new(DiagramRepositoryMockImpl::new(diagram_repository_result));
-            let no_op_presenter: Arc<LoadDiagramFromFilePresenterNoOpImpl> =
-                Arc::new(LoadDiagramFromFilePresenterNoOpImpl);
+            let no_op_presenter: Arc<LoadDiagramPresenterNoOpImpl> =
+                Arc::new(LoadDiagramPresenterNoOpImpl);
 
-            let use_case: LoadDiagramFromFileUseCase<LoadDiagramFromFileResult> =
-                LoadDiagramFromFileUseCase::new(
-                    file_repository.clone(),
-                    diagram_repository.clone(),
-                    no_op_presenter,
-                );
+            let use_case: LoadDiagramUseCase<LoadDiagramResult> = LoadDiagramUseCase::new(
+                file_repository.clone(),
+                diagram_repository.clone(),
+                no_op_presenter,
+            );
 
-            let result: LoadDiagramFromFileResult = use_case.execute(file_path);
+            let result: LoadDiagramResult = use_case.execute(file_path);
 
             assert_eq!(expected, result);
         }
@@ -146,20 +144,19 @@ mod test {
         let error_msg: String = "Some unknown error".to_owned();
         let diagram_repository_result: Option<Result<Diagram, DiagramRepositoryError>> =
             Some(Err(DiagramRepositoryError::Unknown(error_msg.clone())));
-        let expected: Result<_, LoadDiagramFromFileError> =
-            Err(LoadDiagramFromFileError::ParseError(error_msg));
+        let expected: Result<_, LoadDiagramError> = Err(LoadDiagramError::ParseError(error_msg));
 
         let file_repository: Arc<dyn FileRepository> =
             Arc::new(FileRepositoryMockImpl::new(Ok("Some content".to_owned())));
         let diagram_repository: Arc<dyn DiagramRepository> =
             Arc::new(DiagramRepositoryMockImpl::new(diagram_repository_result));
-        let no_op_presenter: Arc<LoadDiagramFromFilePresenterNoOpImpl> =
-            Arc::new(LoadDiagramFromFilePresenterNoOpImpl);
+        let no_op_presenter: Arc<LoadDiagramPresenterNoOpImpl> =
+            Arc::new(LoadDiagramPresenterNoOpImpl);
 
-        let use_case: LoadDiagramFromFileUseCase<LoadDiagramFromFileResult> =
-            LoadDiagramFromFileUseCase::new(file_repository, diagram_repository, no_op_presenter);
+        let use_case: LoadDiagramUseCase<LoadDiagramResult> =
+            LoadDiagramUseCase::new(file_repository, diagram_repository, no_op_presenter);
 
-        let result: LoadDiagramFromFileResult = use_case.execute(file_path);
+        let result: LoadDiagramResult = use_case.execute(file_path);
 
         assert_eq!(expected, result);
     }
@@ -171,19 +168,19 @@ mod test {
         let file_repository_result: Result<String, FileRepositoryError> =
             Ok("Valid content".to_owned());
         let diagram_repository_result: Option<Result<Diagram, _>> = Some(Ok(diagram.clone()));
-        let expected: LoadDiagramFromFileResult = Ok(diagram.clone());
+        let expected: LoadDiagramResult = Ok(diagram.clone());
 
         let file_repository: Arc<dyn FileRepository> =
             Arc::new(FileRepositoryMockImpl::new(file_repository_result));
         let diagram_repository: Arc<dyn DiagramRepository> =
             Arc::new(DiagramRepositoryMockImpl::new(diagram_repository_result));
-        let no_op_presenter: Arc<LoadDiagramFromFilePresenterNoOpImpl> =
-            Arc::new(LoadDiagramFromFilePresenterNoOpImpl);
+        let no_op_presenter: Arc<LoadDiagramPresenterNoOpImpl> =
+            Arc::new(LoadDiagramPresenterNoOpImpl);
 
-        let use_case: LoadDiagramFromFileUseCase<LoadDiagramFromFileResult> =
-            LoadDiagramFromFileUseCase::new(file_repository, diagram_repository, no_op_presenter);
+        let use_case: LoadDiagramUseCase<LoadDiagramResult> =
+            LoadDiagramUseCase::new(file_repository, diagram_repository, no_op_presenter);
 
-        let result: LoadDiagramFromFileResult = use_case.execute(file_path);
+        let result: LoadDiagramResult = use_case.execute(file_path);
 
         assert_eq!(expected, result);
     }
@@ -229,12 +226,10 @@ mod test {
     }
 
     #[derive(Default)]
-    struct LoadDiagramFromFilePresenterNoOpImpl;
+    struct LoadDiagramPresenterNoOpImpl;
 
-    impl LoadDiagramFromFilePresenter<LoadDiagramFromFileResult>
-        for LoadDiagramFromFilePresenterNoOpImpl
-    {
-        fn present(&self, result: LoadDiagramFromFileResult) -> LoadDiagramFromFileResult {
+    impl LoadDiagramPresenter<LoadDiagramResult> for LoadDiagramPresenterNoOpImpl {
+        fn present(&self, result: LoadDiagramResult) -> LoadDiagramResult {
             result
         }
     }
