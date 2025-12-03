@@ -1,0 +1,11 @@
+[package]
+name = "lib-local-fs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+lib-core = { path = "../lib-core" }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+tempfile = "3.23.0"
