@@ -3,7 +3,7 @@ members = [
   # Libraries
   "crates/libraries/lib-core",
   "crates/libraries/lib-plant-uml",
-  "crates/libraries/lib-ascii", "crates/libraries/lib-local-fs",
+  "crates/libraries/lib-ascii", "crates/libraries/lib-local-fs", "crates/applications/desktop-client",
   # Aplications
 ]
 resolver = "3"

@@ -1,0 +1,13 @@
+[package]
+name = "desktop-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+iced = { version = "0.13.1", features = ["canvas"] }
+iced_aw = "0.12.2"
+lib-core = { path = "../../libraries/lib-core/" }
+sweeten = "0.13.0"
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
