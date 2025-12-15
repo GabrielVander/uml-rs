@@ -1,2 +1,2 @@
-pub(crate) mod iced_application;
-mod iced_widgets;
+mod gui;
+pub(crate) mod iced_app;

@@ -133,8 +133,6 @@ impl canvas::Program<Message> for DiagramVisualizer {
                             content: name.clone(),
                             position: *pos + Vector::new(50.0, 25.0), // Center text
                             color: Color::WHITE,
-                            horizontal_alignment: iced::alignment::Horizontal::Center,
-                            vertical_alignment: iced::alignment::Vertical::Center,
                             ..Text::default()
                         });
                     }
@@ -149,15 +147,8 @@ impl canvas::Program<Message> for DiagramVisualizer {
 // --- [Run Application] ---
 use iced::Vector;
 
-use crate::infra::iced_application::UmlRsIcedDesktopApplication;
+use crate::infra::iced_app::IcedApp;
 
 pub fn main() -> iced::Result {
-    let app: UmlRsIcedDesktopApplication = UmlRsIcedDesktopApplication::default();
-
-    iced::application(
-        "Uml-rs",
-        |app: &mut UmlRsIcedDesktopApplication, message| app.update(message),
-        UmlRsIcedDesktopApplication::view,
-    )
-    .run()
+    iced::application(|| IcedApp::new(), IcedApp::update, IcedApp::view).run()
 }
