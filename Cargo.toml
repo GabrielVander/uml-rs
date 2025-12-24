@@ -1,13 +1,13 @@
 [workspace]
 members = [
   # Libraries
-  "crates/libraries/lib-core",
-  "crates/libraries/lib-plant-uml",
-  "crates/libraries/lib-ascii",
-  "crates/libraries/lib-local-fs",
+  "src/libraries/lib-core",
+  "src/libraries/lib-plant-uml",
+  "src/libraries/lib-ascii",
+  "src/libraries/lib-local-fs",
   # Aplications
-  "crates/applications/desktop-client",
-  "crates/applications/flutter/uml_rs/rust",
+  "src/applications/desktop-client",
+  "src/applications/flutter/uml_rs/rust",
 ]
 resolver = "3"
 

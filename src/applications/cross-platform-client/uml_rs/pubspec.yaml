@@ -35,6 +35,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_highlight: ^0.7.0
+  flutter_rust_bridge: 2.11.1
   flutter_svg: ^2.2.3
   highlight: ^0.7.0
   multi_split_view: ^3.6.1

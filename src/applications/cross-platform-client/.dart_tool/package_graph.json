@@ -23,9 +23,8 @@
       "dependencies": [
         "code_text_field",
         "flutter",
-        "flutter_code_editor",
         "flutter_highlight",
-        "flutter_layout_grid",
+        "flutter_rust_bridge",
         "flutter_svg",
         "highlight",
         "multi_split_view",
@@ -121,41 +120,11 @@
       ]
     },
     {
-      "name": "flutter_layout_grid",
-      "version": "2.0.8",
-      "dependencies": [
-        "collection",
-        "flutter",
-        "quiver"
-      ]
-    },
-    {
       "name": "flutter_highlight",
       "version": "0.7.0",
       "dependencies": [
         "flutter",
         "highlight"
-      ]
-    },
-    {
-      "name": "flutter_code_editor",
-      "version": "0.3.5",
-      "dependencies": [
-        "autotrie",
-        "characters",
-        "charcode",
-        "collection",
-        "equatable",
-        "flutter",
-        "flutter_highlight",
-        "highlight",
-        "http",
-        "linked_scroll_controller",
-        "meta",
-        "mocktail",
-        "scrollable_positioned_list",
-        "tuple",
-        "url_launcher"
       ]
     },
     {
@@ -359,81 +328,6 @@
       ]
     },
     {
-      "name": "quiver",
-      "version": "3.2.2",
-      "dependencies": [
-        "matcher"
-      ]
-    },
-    {
-      "name": "url_launcher",
-      "version": "6.3.2",
-      "dependencies": [
-        "flutter",
-        "url_launcher_android",
-        "url_launcher_ios",
-        "url_launcher_linux",
-        "url_launcher_macos",
-        "url_launcher_platform_interface",
-        "url_launcher_web",
-        "url_launcher_windows"
-      ]
-    },
-    {
-      "name": "tuple",
-      "version": "2.0.2",
-      "dependencies": []
-    },
-    {
-      "name": "scrollable_positioned_list",
-      "version": "0.3.8",
-      "dependencies": [
-        "collection",
-        "flutter"
-      ]
-    },
-    {
-      "name": "mocktail",
-      "version": "1.0.4",
-      "dependencies": [
-        "collection",
-        "matcher",
-        "test_api"
-      ]
-    },
-    {
-      "name": "linked_scroll_controller",
-      "version": "0.2.0",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
-      "name": "equatable",
-      "version": "2.0.7",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
-    },
-    {
-      "name": "charcode",
-      "version": "1.4.0",
-      "dependencies": []
-    },
-    {
-      "name": "characters",
-      "version": "1.4.0",
-      "dependencies": []
-    },
-    {
-      "name": "autotrie",
-      "version": "2.0.0",
-      "dependencies": [
-        "hive"
-      ]
-    },
-    {
       "name": "sky_engine",
       "version": "0.0.0",
       "dependencies": []
@@ -443,6 +337,18 @@
       "version": "0.11.1",
       "dependencies": [
         "collection"
+      ]
+    },
+    {
+      "name": "characters",
+      "version": "1.4.0",
+      "dependencies": []
+    },
+    {
+      "name": "linked_scroll_controller",
+      "version": "0.2.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
@@ -549,72 +455,6 @@
       ]
     },
     {
-      "name": "url_launcher_windows",
-      "version": "3.1.5",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_web",
-      "version": "2.4.1",
-      "dependencies": [
-        "flutter",
-        "flutter_web_plugins",
-        "url_launcher_platform_interface",
-        "web"
-      ]
-    },
-    {
-      "name": "url_launcher_platform_interface",
-      "version": "2.3.2",
-      "dependencies": [
-        "flutter",
-        "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_macos",
-      "version": "3.2.5",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_linux",
-      "version": "3.2.2",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_ios",
-      "version": "6.3.6",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_android",
-      "version": "6.3.28",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "hive",
-      "version": "2.2.3",
-      "dependencies": [
-        "crypto",
-        "meta"
-      ]
-    },
-    {
       "name": "sync_http",
       "version": "0.3.1",
       "dependencies": []
@@ -641,20 +481,6 @@
       "version": "1.4.0",
       "dependencies": [
         "collection"
-      ]
-    },
-    {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
-      "name": "crypto",
-      "version": "3.0.7",
-      "dependencies": [
-        "typed_data"
       ]
     },
     {

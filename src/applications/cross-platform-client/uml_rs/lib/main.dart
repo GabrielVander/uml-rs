@@ -1,11 +1,10 @@
+import 'package:code_text_field/code_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_highlight/themes/atom-one-dark-reasonable.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:highlight/languages/xml.dart';
 import 'package:multi_split_view/multi_split_view.dart';
 import 'package:uml_rs/src/rust/frb_generated.dart';
-import 'package:highlight/languages/plaintext.dart';
-import 'package:flutter_highlight/themes/monokai-sublime.dart';
-import 'package:code_text_field/code_text_field.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 Future<void> main() async {
   await RustLib.init();
@@ -28,6 +27,29 @@ class SvgEditorPage extends StatefulWidget {
   State<SvgEditorPage> createState() => _SvgEditorPageState();
 }
 
+// Helper widget to handle invalid SVG strings gracefully
+class _SafeSvgDisplay extends StatelessWidget {
+  final String svgString;
+
+  const _SafeSvgDisplay({required this.svgString});
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      return SvgPicture.string(
+        svgString,
+        width: 100,
+        height: 100,
+        theme: SvgTheme(currentColor: Colors.black),
+        placeholderBuilder: (context) => const CircularProgressIndicator(),
+      );
+    } catch (e) {
+      // If the user types invalid XML, show an error icon or nothing
+      return const Icon(Icons.error_outline, color: Colors.red, size: 48);
+    }
+  }
+}
+
 class _SvgEditorPageState extends State<SvgEditorPage> {
   late CodeController _codeController;
 
@@ -38,22 +60,6 @@ class _SvgEditorPageState extends State<SvgEditorPage> {
   <rect x="20" y="20" width="60" height="60" rx="10" ry="10" fill="none" stroke="red" stroke-width="2" />
 </svg>
 ''';
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the editor controller with XML/SVG syntax highlighting
-    _codeController = CodeController(
-      text: _svgCode,
-      language: xml, // SVG uses XML syntax
-    );
-  }
-
-  @override
-  void dispose() {
-    _codeController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +78,25 @@ class _SvgEditorPageState extends State<SvgEditorPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the editor controller with XML/SVG syntax highlighting
+    _codeController = CodeController(
+      text: _svgCode,
+      language: xml, // SVG uses XML syntax
+    );
+  }
+
   Widget _buildEditorPane() {
     return CodeTheme(
-      data: CodeThemeData(styles: monokaiSublimeTheme),
+      data: CodeThemeData(styles: atomOneDarkReasonableTheme),
       child: Container(
         color: const Color(0xFF272822), // Background color fills the pane
         height: double.infinity, // Forces container to take full height
@@ -121,27 +143,5 @@ class _SvgEditorPageState extends State<SvgEditorPage> {
           ? const Text("Enter SVG Code")
           : _SafeSvgDisplay(svgString: _svgCode),
     );
-  }
-}
-
-// Helper widget to handle invalid SVG strings gracefully
-class _SafeSvgDisplay extends StatelessWidget {
-  final String svgString;
-
-  const _SafeSvgDisplay({required this.svgString});
-
-  @override
-  Widget build(BuildContext context) {
-    try {
-      return SvgPicture.string(
-        svgString,
-        width: 300,
-        height: 300,
-        placeholderBuilder: (context) => const CircularProgressIndicator(),
-      );
-    } catch (e) {
-      // If the user types invalid XML, show an error icon or nothing
-      return const Icon(Icons.error_outline, color: Colors.red, size: 48);
-    }
   }
 }
