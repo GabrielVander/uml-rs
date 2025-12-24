@@ -2,7 +2,7 @@ name: uml_rs
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -23,6 +23,7 @@ environment:
 
 resolution: workspace
 
+uses-material-design: true
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -30,5 +31,12 @@ resolution: workspace
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  code_text_field: ^1.1.0
+  flutter:
+    sdk: flutter
+  flutter_highlight: ^0.7.0
+  flutter_svg: ^2.2.3
+  highlight: ^0.7.0
+  multi_split_view: ^3.6.1
   rust_lib_uml_rs:
     path: rust_builder
